@@ -3,6 +3,7 @@
 #include <cassert>
 #include <chrono>
 #include <random>
+using namespace std;
 
 template <typename T>
 class Vector{
