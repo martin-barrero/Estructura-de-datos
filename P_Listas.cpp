@@ -551,13 +551,6 @@ public:
         
         cout << " (circular inversa)" << endl;
     }
-
-    // Destructor para liberar memoria
-    ~CDLL() {
-        while (!empty()) {
-            pop_front();
-        }
-    }
 };
 
 int main (){
