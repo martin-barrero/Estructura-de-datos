@@ -158,6 +158,187 @@ class SLL{
     }
 };
 
+template <typename T>
+class DLL {
+    private:
+        class Node {
+            private:
+            T data_;
+            Node* next_;
+            Node* prev_;
+    
+            public:
+            Node() {
+                data_ = T();
+                prev_ = next_ = nullptr;
+            }
+    
+            Node(const T& d) {
+                data_ = d;
+                prev_ = next_ = nullptr;
+            }
+    
+            T getData() const {
+                return data_;
+            }
+    
+            Node* getNext() const {
+                return next_;
+            }
+    
+            Node* getPrev() const {
+                return prev_;
+            }
+    
+            void setNext(Node *nxt) {
+                next_ = nxt;
+            }
+    
+            void setPrev(Node *prv) {
+                prev_ = prv;
+            }
+    
+            void setData(const T& data) {
+                data_ = data;
+            }
+        }; 
+    
+    private:
+        Node *first_;
+        Node *last_;
+        unsigned int size_;
+    
+    public:
+        DLL() {
+            first_ = last_ = nullptr;
+            size_ = 0;
+        }
+    
+        bool empty() const {
+            return first_ == nullptr;
+        }
+    
+        unsigned int size() const {
+            return size_;
+        }
+    
+        void print() {
+            Node* current = first_;
+            while (current != nullptr)
+            {
+                cout << current->getData() << " -> ";
+                current = current->getNext();
+            }
+        cout << "nullptr" << endl;
+        }
+    
+        void push_front(const T& d) {
+            Node *n = new Node(d);
+    
+            n->setNext(first_);
+    
+            if (first_ != nullptr) {
+                first_->setPrev(n);  
+            }
+    
+            first_ = n;
+            
+            if (size_ == 0)
+            {
+                last_ = n;
+            }
+            
+            size_++;
+        }
+
+        void push_back(const T& d) {
+            Node* n = new Node(d);
+            
+            if (empty()) {
+                first_ = last_ = n;
+            } else {
+                last_->setNext(n);
+                n->setPrev(last_);
+                last_ = n;
+            }
+            
+            size_++;
+        }
+    
+        void insert(const T& d, unsigned int pos) {
+            assert(pos <= size_);  // Posición debe ser válida
+            
+            if (pos == 0) {
+                push_front(d);
+                return;
+            }
+            
+            if (pos == size_) {
+                push_back(d);
+                return;
+            }
+            
+            Node* n = new Node(d);
+            Node* current = first_;
+            
+            // Avanzar hasta la posición deseada
+            for (unsigned int i = 0; i < pos; i++) {
+                current = current->getNext();
+            }
+            
+            // Enlazar el nuevo nodo
+            n->setPrev(current->getPrev());
+            n->setNext(current);
+            current->getPrev()->setNext(n);
+            current->setPrev(n);
+            
+            size_++;
+        }
+    
+        void pop_front() {
+            assert(!empty());
+            
+            Node* temp = first_;
+            first_ = first_->getNext();
+            
+            if (first_ != nullptr) {
+                first_->setPrev(nullptr);
+            } else {
+                last_ = nullptr;  // Lista quedó vacía
+            }
+            
+            delete temp;
+            size_--;
+        }
+    
+        void pop_back() {
+            assert(!empty());
+            
+            if (size_ == 1) {
+                pop_front();
+                return;
+            }
+            
+            Node* temp = last_;
+            last_ = last_->getPrev();
+            last_->setNext(nullptr);
+            
+            delete temp;
+            size_--;
+        }
+    
+        // Método adicional útil para DLL: imprimir en orden inverso
+        void print_reverse() {
+            Node* current = last_;
+            while (current != nullptr) {
+                cout << current->getData() << " -> ";
+                current = current->getPrev();
+            }
+            cout << "nullptr" << endl;
+        }
+    
+    };
+
 int main (){
     return 0;
 }
