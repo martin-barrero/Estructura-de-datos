@@ -337,7 +337,228 @@ class DLL {
             cout << "nullptr" << endl;
         }
     
+};
+
+template <typename T>
+class CDLL {
+private:
+    class Node {
+    private:
+        T data_;
+        Node* next_;
+        Node* prev_;
+
+    public:
+        Node() {
+            data_ = T();
+            prev_ = next_ = nullptr;
+        }
+
+        Node(const T& d) {
+            data_ = d;
+            prev_ = next_ = nullptr;
+        }
+
+        T getData() const {
+            return data_;
+        }
+
+        Node* getNext() const {
+            return next_;
+        }
+
+        Node* getPrev() const {
+            return prev_;
+        }
+
+        void setNext(Node* nxt) {
+            next_ = nxt;
+        }
+
+        void setPrev(Node* prv) {
+            prev_ = prv;
+        }
+
+        void setData(const T& data) {
+            data_ = data;
+        }
     };
+
+private:
+    Node* head_;  // Puntero al nodo cabeza (puede ser cualquier nodo)
+    unsigned int size_;
+
+public:
+    CDLL() {
+        head_ = nullptr;
+        size_ = 0;
+    }
+
+    bool empty() const {
+        return head_ == nullptr;
+    }
+
+    unsigned int size() const {
+        return size_;
+    }
+
+    void push_front(const T& d) {
+        Node* n = new Node(d);
+        
+        if (empty()) {
+            n->setNext(n);
+            n->setPrev(n);
+            head_ = n;
+        } else {
+            Node* last = head_->getPrev();
+            
+            n->setNext(head_);
+            n->setPrev(last);
+            
+            head_->setPrev(n);
+            last->setNext(n);
+            
+            head_ = n;
+        }
+        
+        size_++;
+    }
+
+    void push_back(const T& d) {
+        // En una lista circular, push_back es similar a push_front pero no se mueve el head
+        Node* n = new Node(d);
+        
+        if (empty()) {
+            n->setNext(n);
+            n->setPrev(n);
+            head_ = n;
+        } else {
+            Node* last = head_->getPrev();
+            
+            n->setNext(head_);
+            n->setPrev(last);
+            
+            head_->setPrev(n);
+            last->setNext(n);
+        }
+        
+        size_++;
+    }
+
+    void insert(const T& d, unsigned int pos) {
+        assert(pos <= size_);
+        
+        if (pos == 0) {
+            push_front(d);
+            return;
+        }
+        
+        if (pos == size_) {
+            push_back(d);
+            return;
+        }
+        
+        Node* n = new Node(d);
+        Node* current = head_;
+        
+        for (unsigned int i = 0; i < pos; i++) {
+            current = current->getNext();
+        }
+        
+        Node* prev = current->getPrev();
+        
+        n->setNext(current);
+        n->setPrev(prev);
+        
+        prev->setNext(n);
+        current->setPrev(n);
+        
+        size_++;
+    }
+
+    void pop_front() {
+        assert(!empty());
+        
+        if (size_ == 1) {
+            delete head_;
+            head_ = nullptr;
+        } else {
+            Node* new_head = head_->getNext();
+            Node* last = head_->getPrev();
+            
+            new_head->setPrev(last);
+            last->setNext(new_head);
+            
+            delete head_;
+            head_ = new_head;
+        }
+        
+        size_--;
+    }
+
+    void pop_back() {
+        assert(!empty());
+        
+        if (size_ == 1) {
+            pop_front();
+            return;
+        }
+        
+        Node* last = head_->getPrev();
+        Node* new_last = last->getPrev();
+        
+        new_last->setNext(head_);
+        head_->setPrev(new_last);
+        
+        delete last;
+        size_--;
+    }
+
+    void print() {
+        if (empty()) {
+            cout << "Lista vacía" << endl;
+            return;
+        }
+        
+        Node* current = head_;
+        do {
+            cout << current->getData();
+            current = current->getNext();
+            if (current != head_) {
+                cout << " <-> ";
+            }
+        } while (current != head_);
+        
+        cout << " (circular)" << endl;
+    }
+
+    void print_reverse() {
+        if (empty()) {
+            cout << "Lista vacía" << endl;
+            return;
+        }
+        
+        Node* current = head_->getPrev();
+        Node* start = current;
+        
+        do {
+            cout << current->getData();
+            current = current->getPrev();
+            if (current != start) {
+                cout << " <-> ";
+            }
+        } while (current != start);
+        
+        cout << " (circular inversa)" << endl;
+    }
+
+    // Destructor para liberar memoria
+    ~CDLL() {
+        while (!empty()) {
+            pop_front();
+        }
+    }
+};
 
 int main (){
     return 0;
