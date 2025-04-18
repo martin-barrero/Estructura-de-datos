@@ -111,20 +111,9 @@ private:
         inOrderTraversal(currentNode->right_);
     }
 
-    void clearTree(Node* currentNode) {
-        if (currentNode == nullptr) return;
-        clearTree(currentNode->left_);
-        clearTree(currentNode->right_);
-        delete currentNode;
-    }
-
 public:
     Treap() : root_(nullptr) {
         srand(time(nullptr));
-    }
-
-    ~Treap() {
-        clearTree(root_);
     }
 
     void insert(const T& value) {
